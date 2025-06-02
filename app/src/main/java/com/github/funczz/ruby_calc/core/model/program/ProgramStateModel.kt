@@ -12,6 +12,8 @@ import com.github.funczz.ruby_calc.core.interactor.program.GetDetailsProgramInte
 import com.github.funczz.ruby_calc.core.interactor.program.GetListProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.SaveProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramDetailsLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramDetailsSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
@@ -20,9 +22,12 @@ import com.github.funczz.ruby_calc.core.usecase.program.DeleteProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetListProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.SaveProgramUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramDetailsLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramDetailsSaveSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexSaveSettingUseCase
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Suppress("Unused", "MemberVisibilityCanBePrivate")
 class ProgramStateModel(
@@ -40,6 +45,10 @@ class ProgramStateModel(
     private val programIndexLoadSettingUseCase: ProgramIndexLoadSettingUseCase,
 
     private val programIndexSaveSettingUseCase: ProgramIndexSaveSettingUseCase,
+
+    private val programDetailsLoadSettingUseCase: ProgramDetailsLoadSettingUseCase,
+
+    private val programDetailsSaveSettingUseCase: ProgramDetailsSaveSettingUseCase,
 
     programDetails: ProgramDetails = ProgramDetails(),
 
@@ -170,6 +179,18 @@ class ProgramStateModel(
                     )
                 )
                 present(data = programIndexInputData)
+
+                //Load ProgramDetails
+                programDetailsLoadSettingUseCase(
+                    inputData = ProgramDetailsLoadSettingUseCase.InputData(
+                        defaultId = Optional.empty()
+                    )
+                ).getOrNull()?.let {
+                    val programDetailsIndexData = ProgramStateData.InputData(
+                        value = GetDetailsProgramUseCase.IdInputData(id = it)
+                    )
+                    present(data = programDetailsIndexData)
+                }
             }
 
             is ProgramStateData.SaveData -> {
@@ -177,6 +198,13 @@ class ProgramStateModel(
                 programIndexSaveSettingUseCase(
                     inputData = ProgramIndexSaveSettingUseCase.InputData(
                         programIndex = programIndex
+                    )
+                )
+
+                //Save ProgramDetails
+                programDetailsSaveSettingUseCase(
+                    inputData = ProgramDetailsSaveSettingUseCase.InputData(
+                        programId = Optional.ofNullable(programDetails.programModel.getOrNull()?.id)
                     )
                 )
             }
@@ -213,6 +241,12 @@ class ProgramStateModel(
                 useCase = SaveSettingInteractor(
                     provider = rwSettingDataProvider
                 )
+            ),
+            programDetailsLoadSettingUseCase = ProgramDetailsLoadSettingInteractor(
+                useCase = LoadSettingInteractor(provider = rwSettingDataProvider)
+            ),
+            programDetailsSaveSettingUseCase = ProgramDetailsSaveSettingInteractor(
+                useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
             ),
         )
 

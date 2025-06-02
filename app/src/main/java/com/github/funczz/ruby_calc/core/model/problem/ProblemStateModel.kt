@@ -16,6 +16,8 @@ import com.github.funczz.ruby_calc.core.interactor.problem.GetListProblemInterac
 import com.github.funczz.ruby_calc.core.interactor.problem.SaveProblemInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.GetDetailsProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemDetailsLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemDetailsSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
@@ -26,9 +28,12 @@ import com.github.funczz.ruby_calc.core.usecase.problem.GetDetailsProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.problem.GetListProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.problem.SaveProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemDetailsLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemDetailsSaveSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexSaveSettingUseCase
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 @Suppress("Unused", "MemberVisibilityCanBePrivate")
 class ProblemStateModel(
@@ -50,6 +55,10 @@ class ProblemStateModel(
     private val problemIndexLoadSettingUseCase: ProblemIndexLoadSettingUseCase,
 
     private val problemIndexSaveSettingUseCase: ProblemIndexSaveSettingUseCase,
+
+    private val problemDetailsLoadSettingUseCase: ProblemDetailsLoadSettingUseCase,
+
+    private val problemDetailsSaveSettingUseCase: ProblemDetailsSaveSettingUseCase,
 
     problemDetails: ProblemDetails = ProblemDetails(),
 
@@ -172,6 +181,18 @@ class ProblemStateModel(
                     )
                 )
                 present(data = problemIndexInputData)
+
+                //Load ProblemDetails
+                problemDetailsLoadSettingUseCase(
+                    inputData = ProblemDetailsLoadSettingUseCase.InputData(
+                        defaultId = Optional.empty()
+                    )
+                ).getOrNull()?.let {
+                    val problemDetailsIndexData = ProblemStateData.InputData(
+                        value = GetDetailsProblemUseCase.IdInputData(id = it)
+                    )
+                    present(data = problemDetailsIndexData)
+                }
             }
 
             is ProblemStateData.SaveData -> {
@@ -179,6 +200,13 @@ class ProblemStateModel(
                 problemIndexSaveSettingUseCase(
                     inputData = ProblemIndexSaveSettingUseCase.InputData(
                         problemIndex = problemIndex
+                    )
+                )
+
+                //Save ProblemDetails
+                problemDetailsSaveSettingUseCase(
+                    inputData = ProblemDetailsSaveSettingUseCase.InputData(
+                        problemId = Optional.ofNullable(problemDetails.problemModel.getOrNull()?.id)
                     )
                 )
             }
@@ -211,16 +239,17 @@ class ProblemStateModel(
             getDetailsElementUseCase = GetDetailsElementInteractor(provider = rwElementDataProvider),
             getListAnswerUseCase = GetListAnswerInteractor(provider = findAnswerDataProvider),
             problemIndexLoadSettingUseCase = ProblemIndexLoadSettingInteractor(
-                useCase = LoadSettingInteractor(
-                    provider = rwSettingDataProvider
-                )
+                useCase = LoadSettingInteractor(provider = rwSettingDataProvider)
             ),
             problemIndexSaveSettingUseCase = ProblemIndexSaveSettingInteractor(
-                useCase = SaveSettingInteractor(
-                    provider = rwSettingDataProvider
-                )
+                useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
+            ),
+            problemDetailsLoadSettingUseCase = ProblemDetailsLoadSettingInteractor(
+                useCase = LoadSettingInteractor(provider = rwSettingDataProvider)
+            ),
+            problemDetailsSaveSettingUseCase = ProblemDetailsSaveSettingInteractor(
+                useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
             ),
         )
-
     }
 }
