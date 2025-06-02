@@ -16,6 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { setUrl("https://funczz.github.io/kotlin-migration") }
+        maven { setUrl("https://funczz.github.io/kotlin-notifier") }
+        maven { setUrl("https://funczz.github.io/kotlin-sam") }
     }
 }
 
