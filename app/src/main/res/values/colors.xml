@@ -7,4 +7,33 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-</resources>
+
+    <!-- Bootstrap 5.1 https://getbootstrap.com/docs/5.1/utilities/colors/ -->
+    <color name="bootstrap_blue">#0d6efd</color>
+    <color name="bootstrap_indigo">#6610f2</color>
+    <color name="bootstrap_purple">#6f42c1</color>
+    <color name="bootstrap_pink">#d63384</color>
+    <color name="bootstrap_red">#dc3545</color>
+    <color name="bootstrap_orange">#fd7e14</color>
+    <color name="bootstrap_yellow">#ffc107</color>
+    <color name="bootstrap_green">#198754</color>
+    <color name="bootstrap_teal">#20c997</color>
+    <color name="bootstrap_cyan">#0dcaf0</color>
+    <color name="bootstrap_gray_100">#f8f9fa</color>
+    <color name="bootstrap_gray_200">#e9ecef</color>
+    <color name="bootstrap_gray_300">#dee2e6</color>
+    <color name="bootstrap_gray_400">#ced4da</color>
+    <color name="bootstrap_gray_500">#adb5bd</color>
+    <color name="bootstrap_gray_600">#6c757d</color>
+    <color name="bootstrap_gray_700">#495057</color>
+    <color name="bootstrap_gray_800">#343a40</color>
+    <color name="bootstrap_gray_900">#212529</color>
+    <color name="bootstrap_primary">#0d6efd</color> <!-- blue -->
+    <color name="bootstrap_secondary">#6c757d</color> <!-- gray_600 -->
+    <color name="bootstrap_success">#198754</color> <!-- green -->
+    <color name="bootstrap_info">#0dcaf0</color> <!-- cyan -->
+    <color name="bootstrap_warning">#ffc107</color> <!-- yellow -->
+    <color name="bootstrap_danger">#dc3545</color> <!-- red -->
+    <color name="bootstrap_light">#f8f9fa</color> <!-- gray_100 -->
+    <color name="bootstrap_dark">#212529</color> <!-- gray-900 -->
+</resources><!-- colorResource(id = R.color.black) -->

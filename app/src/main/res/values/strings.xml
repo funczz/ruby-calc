@@ -1,3 +1,79 @@
 <resources>
     <string name="app_name">Ruby Calc</string>
+    <!-- message -->
+    <string name="do_not_delete_warning_message">削除できません。</string>
+    <string name="save_success_message">保存しました。</string>
+    <string name="save_failure_message">保存できませんでした。</string>
+    <string name="open_file_failure_message">ファイルを開けませんでした。</string>
+    <string name="backup_success_message">バックアップしました。</string>
+    <string name="restore_success_message">リストアしました。</string>
+    <!-- content -->
+    <string name="menu_content_description">メニュー</string>
+    <string name="sort_by_name_content_description">名前順</string>
+    <string name="sort_by_create_at_content_description">作成順</string>
+    <string name="sort_by_update_at_content_description">更新順</string>
+    <string name="sort_order_by_asc_content_description">昇順</string>
+    <string name="sort_order_by_desc_content_description">降順</string>
+    <string name="back_content_description">戻る</string>
+    <string name="calculate_content_description">計算する</string>
+    <string name="undo_content_description">元に戻す</string>
+    <string name="redo_content_description">やり直す</string>
+    <string name="save_content_description">保存</string>
+    <string name="add_content_description">新規</string>
+    <string name="delete_content_description">削除</string>
+    <string name="edit_content_description">編集</string>
+    <string name="create_at_content_format">作成:%s</string>
+    <string name="update_at_content_format">更新:%s</string>
+    <string name="datetime_formatter_pattern">yyyy-MM-dd</string>
+    <string name="calculator_success_result_label">結果</string>
+    <string name="calculator_failure_result_label">エラー</string>
+    <string name="calculator_open_label">計算</string>
+    <string name="calculator_submit_label">実行</string>
+    <string name="calculator_argument_format">ARGV[%d]</string>
+    <string name="backup_content_description">バックアップ</string>
+    <string name="restore_content_description">リストア</string>
+    <!-- close_dialog -->
+    <string name="close_dialog_title">この画面を閉じます</string>
+    <string name="close_dialog_text">保存していない内容は破棄されます。\nよろしいですか？</string>
+    <string name="close_dialog_confirm">閉じる</string>
+    <string name="close_dialog_dismiss">キャンセル</string>
+    <!-- delete_dialog -->
+    <string name="delete_dialog_title">この内容を削除します</string>
+    <string name="delete_dialog_text">この操作は取り消せません。\nよろしいですか？</string>
+    <string name="delete_dialog_confirm">削除</string>
+    <string name="delete_dialog_dismiss">キャンセル</string>
+    <!-- save_dialog -->
+    <string name="save_dialog_title">この内容を保存します</string>
+    <string name="save_dialog_text">変更前の内容は破棄されます。\nよろしいですか？</string>
+    <string name="save_dialog_confirm">保存</string>
+    <string name="save_dialog_dismiss">キャンセル</string>
+    <!-- license_dialog -->
+    <string name="license_dialog_title">ライセンス</string>
+    <!-- main_destination -->
+    <string name="problem_destination_label">データ入力</string>
+    <string name="program_destination_label">プログラム</string>
+    <string name="system_destination_label">システム</string>
+    <!-- problem_destination -->
+    <string name="problem_index_search_label">データ入力</string>
+    <string name="problem_name_label">データ名</string>
+    <string name="problem_name_supporting_already_exists">この名前は既に存在しています。</string>
+    <string name="problem_program_name_label">プログラム名</string>
+    <string name="problem_comment_label">コメント</string>
+    <string name="problem_details_label">データ入力</string>
+    <!-- program_destination -->
+    <string name="program_index_search_label">プログラム</string>
+    <string name="program_name_label">プログラム名</string>
+    <string name="program_name_supporting_already_exists">この名前は既に存在しています。</string>
+    <string name="program_description_label">プログラム概要</string>
+    <string name="program_hint_label">入力内容の説明</string>
+    <string name="program_code_label">プログラムのコード</string>
+    <string name="program_details_label">プログラム</string>
+    <string name="program_menu_view_ruby_script_label">組み込みのRubyスクリプトを表示する</string>
+    <!-- system_destination -->
+    <string name="system_backup_label">バックアップ</string>
+    <string name="system_restore_label">リストア</string>
+    <string name="system_error_message_label">メッセージ</string>
+    <string name="system_error_cause_label">原因</string>
+    <string name="system_error_stack_trace_label">スタックトレース</string>
+    <string name="system_menu_view_license_label">ライセンスを表示する</string>
 </resources>

@@ -6,41 +6,44 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import com.github.funczz.kotlin.notifier.Notifier
+import com.github.funczz.ruby_calc.android.destination.main.MainDestination
 import com.github.funczz.ruby_calc.android.ui.theme.RubyCalcTheme
+import com.github.funczz.ruby_calc.core.service.BackupService
+import com.github.funczz.ruby_calc.instance.BackupServiceProvider
+import com.github.funczz.ruby_calc.instance.ExecutorServiceProvider
+import com.github.funczz.ruby_calc.instance.NotifierProvider
+import com.github.funczz.ruby_calc.instance.UiPresenterProvider
+import java.util.concurrent.Executor
 
-class MainActivity : ComponentActivity() {
+class MainActivity(
+
+    private val presenter: Presenter<UiState> = UiPresenterProvider.getInstance(),
+
+    private val notifier: Notifier = NotifierProvider.getInstance(),
+
+    private val backupService: BackupService = BackupServiceProvider.getInstance(),
+
+    private val executor: Executor = ExecutorServiceProvider.getInstance(),
+
+    ) : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             RubyCalcTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    MainDestination(
+                        presenter = presenter,
+                        notifier = notifier,
+                        backupService = backupService,
+                        executor = executor,
+                    )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    RubyCalcTheme {
-        Greeting("Android")
     }
 }
