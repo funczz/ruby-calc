@@ -5,6 +5,7 @@ import com.github.funczz.kotlin.logging.LoggerFactory
 import com.github.funczz.kotlin.notifier.Notifier
 import com.github.funczz.ruby_calc.android.ArgvUiState
 import com.github.funczz.ruby_calc.android.Presenter
+import com.github.funczz.ruby_calc.android.SearchBoxUiState
 import com.github.funczz.ruby_calc.android.TextFieldState
 import com.github.funczz.ruby_calc.android.UiCommand
 import com.github.funczz.ruby_calc.android.UiState
@@ -27,6 +28,22 @@ import kotlin.jvm.optionals.getOrNull
 object ProgramUiCommand : UiCommand {
 
     override val logger = LoggerFactory.getLogger(this::class.java)
+
+    fun loadIndexSearchBoxUiState(presenter: Presenter<UiState>) {
+        val uiState = presenter.getStateFlow().value
+        if (uiState.programIndexSearchBoxUiState.isLoaded) return
+        presenter.render(
+            output = uiState.copy(
+                programIndexSearchBoxUiState = SearchBoxUiState(
+                    indexValue = TextFieldState(
+                        text = uiState.programIndex.value,
+                        undoManager = null
+                    ),
+                    isLoaded = true,
+                )
+            )
+        )
+    }
 
     fun index(
         value: String,

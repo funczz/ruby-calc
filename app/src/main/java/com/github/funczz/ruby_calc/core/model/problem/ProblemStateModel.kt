@@ -7,6 +7,7 @@ import com.github.funczz.ruby_calc.core.data.provider.element.RWElementDataProvi
 import com.github.funczz.ruby_calc.core.data.provider.problem.CRUDProblemDataProvider
 import com.github.funczz.ruby_calc.core.data.provider.problem.FindProblemDataProvider
 import com.github.funczz.ruby_calc.core.data.provider.program.CRUDProgramDataProvider
+import com.github.funczz.ruby_calc.core.data.provider.setting.RWSettingDataProvider
 import com.github.funczz.ruby_calc.core.interactor.answer.GetListAnswerInteractor
 import com.github.funczz.ruby_calc.core.interactor.element.GetDetailsElementInteractor
 import com.github.funczz.ruby_calc.core.interactor.problem.DeleteProblemInteractor
@@ -14,6 +15,10 @@ import com.github.funczz.ruby_calc.core.interactor.problem.GetDetailsProblemInte
 import com.github.funczz.ruby_calc.core.interactor.problem.GetListProblemInteractor
 import com.github.funczz.ruby_calc.core.interactor.problem.SaveProblemInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.GetDetailsProgramInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexSaveSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
 import com.github.funczz.ruby_calc.core.usecase.answer.GetListAnswerUseCase
 import com.github.funczz.ruby_calc.core.usecase.element.GetDetailsElementUseCase
 import com.github.funczz.ruby_calc.core.usecase.problem.DeleteProblemUseCase
@@ -21,6 +26,8 @@ import com.github.funczz.ruby_calc.core.usecase.problem.GetDetailsProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.problem.GetListProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.problem.SaveProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexSaveSettingUseCase
 import java.util.Optional
 
 @Suppress("Unused", "MemberVisibilityCanBePrivate")
@@ -39,6 +46,10 @@ class ProblemStateModel(
     private val getDetailsElementUseCase: GetDetailsElementUseCase,
 
     private val getListAnswerUseCase: GetListAnswerUseCase,
+
+    private val problemIndexLoadSettingUseCase: ProblemIndexLoadSettingUseCase,
+
+    private val problemIndexSaveSettingUseCase: ProblemIndexSaveSettingUseCase,
 
     problemDetails: ProblemDetails = ProblemDetails(),
 
@@ -144,6 +155,33 @@ class ProblemStateModel(
                     }
                 }
             }
+
+            is ProblemStateData.LoadData -> {
+                //Load ProblemIndex
+                val problemIndex = problemIndexLoadSettingUseCase(
+                    inputData = ProblemIndexLoadSettingUseCase.InputData(
+                        problemIndex = problemIndex
+                    )
+                )
+                val problemIndexInputData = ProblemStateData.InputData(
+                    value = GetListProblemUseCase.InputData(
+                        value = problemIndex.value,
+                        orderColumn = problemIndex.orderColumn,
+                        orderBy = problemIndex.orderBy,
+                        limit = problemIndex.limit,
+                    )
+                )
+                present(data = problemIndexInputData)
+            }
+
+            is ProblemStateData.SaveData -> {
+                //Save ProblemIndex
+                problemIndexSaveSettingUseCase(
+                    inputData = ProblemIndexSaveSettingUseCase.InputData(
+                        problemIndex = problemIndex
+                    )
+                )
+            }
         }
     }
 
@@ -161,6 +199,7 @@ class ProblemStateModel(
             crudProblemDataProvider: CRUDProblemDataProvider,
             crudProgramDataProvider: CRUDProgramDataProvider,
             findProblemDataProvider: FindProblemDataProvider,
+            rwSettingDataProvider: RWSettingDataProvider,
             rwElementDataProvider: RWElementDataProvider,
             findAnswerDataProvider: FindAnswerDataProvider,
         ): ProblemStateModel = ProblemStateModel(
@@ -171,6 +210,17 @@ class ProblemStateModel(
             getDetailsProgramUseCase = GetDetailsProgramInteractor(provider = crudProgramDataProvider),
             getDetailsElementUseCase = GetDetailsElementInteractor(provider = rwElementDataProvider),
             getListAnswerUseCase = GetListAnswerInteractor(provider = findAnswerDataProvider),
+            problemIndexLoadSettingUseCase = ProblemIndexLoadSettingInteractor(
+                useCase = LoadSettingInteractor(
+                    provider = rwSettingDataProvider
+                )
+            ),
+            problemIndexSaveSettingUseCase = ProblemIndexSaveSettingInteractor(
+                useCase = SaveSettingInteractor(
+                    provider = rwSettingDataProvider
+                )
+            ),
         )
+
     }
 }

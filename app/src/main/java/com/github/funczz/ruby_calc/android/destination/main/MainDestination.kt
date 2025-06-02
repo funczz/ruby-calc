@@ -1,5 +1,6 @@
 package com.github.funczz.ruby_calc.android.destination.main
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -13,13 +14,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.Lifecycle
 import com.github.funczz.kotlin.notifier.Notifier
+import com.github.funczz.ruby_calc.android.ObserveLifecycleEvent
 import com.github.funczz.ruby_calc.android.Presenter
 import com.github.funczz.ruby_calc.android.R
 import com.github.funczz.ruby_calc.android.UiState
 import com.github.funczz.ruby_calc.android.destination.problem.ProblemDestination
+import com.github.funczz.ruby_calc.android.destination.problem.ProblemUiCommand
 import com.github.funczz.ruby_calc.android.destination.program.ProgramDestination
+import com.github.funczz.ruby_calc.android.destination.program.ProgramUiCommand
 import com.github.funczz.ruby_calc.android.destination.system.SystemDestination
+import com.github.funczz.ruby_calc.core.action.accept
+import com.github.funczz.ruby_calc.core.model.RubyCalcStateData
 import com.github.funczz.ruby_calc.core.service.BackupService
 import java.util.concurrent.Executor
 
@@ -30,6 +37,28 @@ fun MainDestination(
     backupService: BackupService,
     executor: Executor,
 ) {
+    ObserveLifecycleEvent { event ->
+        when (event) {
+            Lifecycle.Event.ON_CREATE -> {
+                Log.d("LifecycleEvent", "ON_CREATE")
+                notifier.accept(input = RubyCalcStateData.OnLoad)
+                ProblemUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
+                ProgramUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
+            }
+
+            Lifecycle.Event.ON_STOP -> {
+                Log.d("LifecycleEvent", "ON_STOP")
+                notifier.accept(input = RubyCalcStateData.OnSave)
+            }
+
+            Lifecycle.Event.ON_DESTROY -> {
+                Log.d("LifecycleEvent", "ON_DESTROY")
+                notifier.accept(input = RubyCalcStateData.OnClose)
+            }
+
+            else -> {}
+        }
+    }
     var currentDestination: MainDestinations by rememberSaveable { mutableStateOf(MainDestinations.PROBLEM) }
     NavigationSuiteScaffold(
         navigationSuiteItems = {

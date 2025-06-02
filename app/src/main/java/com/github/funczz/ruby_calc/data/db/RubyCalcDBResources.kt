@@ -69,7 +69,18 @@ class RubyCalcDBResources(
                         down = "db/migration/v1_0/down/problem_answer_drop_table_problem_answer.sql"
                     )
                 ),
-            )
+            ),
+            Version(
+                versionId = "1.1",
+                LoggingSQLPatch(
+                    patch = SQLPatch(
+                        tag = "",
+                        classLoader = Thread.currentThread().contextClassLoader as ClassLoader,
+                        up = "db/migration/v1_1/up/setting_create_table_setting.sql",
+                        down = "db/migration/v1_1/down/setting_drop_table_setting.sql"
+                    )
+                ),
+            ),
         )
 
         fun getDatabaseDirectoryFile(filesDirectory: File): File {

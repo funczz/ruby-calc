@@ -11,4 +11,10 @@ interface RubyCalcStateData {
         }
     }
 
+    object OnClose : RubyCalcStateData
+
+    object OnLoad : RubyCalcStateData
+
+    object OnSave : RubyCalcStateData
+
 }

@@ -19,4 +19,7 @@ sealed interface ProblemStateData : RubyCalcStateData {
         val value: ProblemUseCase.InputData
     ) : ProblemStateData
 
+    data object LoadData : ProblemStateData
+
+    data object SaveData : ProblemStateData
 }

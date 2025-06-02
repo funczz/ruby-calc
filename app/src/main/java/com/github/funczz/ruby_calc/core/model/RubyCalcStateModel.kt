@@ -15,7 +15,10 @@ import com.github.funczz.ruby_calc.core.model.program.ProgramStateModel
 import com.github.funczz.ruby_calc.core.model.ruby.RubyStateData
 import com.github.funczz.ruby_calc.core.model.ruby.RubyStateModel
 import com.github.funczz.ruby_calc.core.state.RubyCalcState
+import com.github.funczz.ruby_calc.instance.ExecutorServiceProvider
 import java.util.Optional
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.TimeUnit
 
 @Suppress("Unused", "MemberVisibilityCanBePrivate")
 class RubyCalcStateModel(
@@ -32,12 +35,43 @@ class RubyCalcStateModel(
 
     val errorStateModel: ErrorStateModel,
 
+    private val executorService: ExecutorService = ExecutorServiceProvider.getInstance(),
+
     ) : SamModel<RubyCalcStateData> {
 
     var stateData: Optional<RubyCalcStateData> = Optional.empty()
         private set
 
     private val logger = LoggerFactory.getLogger(this::class.java)
+
+    private fun errorPerformed(th: Throwable) {
+        presentPerformed(data = ErrorStateData.ThrowableData(throwable = th))
+        logger.severe { th.stackTraceToString() }
+        //throw th
+    }
+
+    private fun loadPerformed() = try {
+        logger.info { "onLoadPerformed is called." }
+        presentPerformed(data = ProblemStateData.LoadData)
+        presentPerformed(data = ProgramStateData.LoadData)
+    } catch (th: Throwable) {
+        errorPerformed(th)
+    }
+
+    private fun savePerformed() = try {
+        logger.info { "onSavePerformed is called." }
+        executorService.submit {
+            presentPerformed(data = ProblemStateData.SaveData)
+            presentPerformed(data = ProgramStateData.SaveData)
+        }
+    } catch (th: Throwable) {
+        errorPerformed(th)
+    }
+
+    private fun closePerformed(milliSeconds: Long = 1000L) {
+        logger.info { "onClosePerformed is called." }
+        TimeUnit.MILLISECONDS.sleep(milliSeconds)
+    }
 
     private fun presentPerformed(data: RubyCalcStateData) {
         try {
@@ -50,9 +84,7 @@ class RubyCalcStateModel(
                 is ErrorStateData -> errorStateModel.present(data = data)
             }
         } catch (th: Throwable) {
-            errorStateModel.present(data = ErrorStateData.ThrowableData(throwable = th))
-            logger.severe { th.stackTraceToString() }
-            //throw th
+            errorPerformed(th)
         }
         stateData = Optional.ofNullable(data)
 
@@ -69,6 +101,12 @@ class RubyCalcStateModel(
                     presentPerformed(data = v)
                 }
             }
+
+            is RubyCalcStateData.OnLoad -> loadPerformed()
+
+            is RubyCalcStateData.OnSave -> savePerformed()
+
+            is RubyCalcStateData.OnClose -> closePerformed()
 
             else -> presentPerformed(data = data)
         }

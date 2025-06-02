@@ -5,16 +5,23 @@ import com.github.funczz.kotlin.sam.SamModel
 import com.github.funczz.ruby_calc.core.data.provider.problem.FindProblemDataProvider
 import com.github.funczz.ruby_calc.core.data.provider.program.CRUDProgramDataProvider
 import com.github.funczz.ruby_calc.core.data.provider.program.FindProgramDataProvider
+import com.github.funczz.ruby_calc.core.data.provider.setting.RWSettingDataProvider
 import com.github.funczz.ruby_calc.core.interactor.problem.GetListProblemInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.DeleteProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.GetDetailsProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.GetListProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.program.SaveProgramInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexSaveSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
 import com.github.funczz.ruby_calc.core.usecase.problem.GetListProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.DeleteProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetListProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.SaveProgramUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexSaveSettingUseCase
 import java.util.Optional
 
 @Suppress("Unused", "MemberVisibilityCanBePrivate")
@@ -29,6 +36,10 @@ class ProgramStateModel(
     private val saveProgramUseCase: SaveProgramUseCase,
 
     private val getListProblemUseCase: GetListProblemUseCase,
+
+    private val programIndexLoadSettingUseCase: ProgramIndexLoadSettingUseCase,
+
+    private val programIndexSaveSettingUseCase: ProgramIndexSaveSettingUseCase,
 
     programDetails: ProgramDetails = ProgramDetails(),
 
@@ -142,6 +153,33 @@ class ProgramStateModel(
                     }
                 }
             }
+
+            is ProgramStateData.LoadData -> {
+                //Load ProgramIndex
+                val programIndex = programIndexLoadSettingUseCase(
+                    inputData = ProgramIndexLoadSettingUseCase.InputData(
+                        programIndex = programIndex
+                    )
+                )
+                val programIndexInputData = ProgramStateData.InputData(
+                    value = GetListProgramUseCase.InputData(
+                        value = programIndex.value,
+                        orderColumn = programIndex.orderColumn,
+                        orderBy = programIndex.orderBy,
+                        limit = programIndex.limit,
+                    )
+                )
+                present(data = programIndexInputData)
+            }
+
+            is ProgramStateData.SaveData -> {
+                //Save ProgramIndex
+                programIndexSaveSettingUseCase(
+                    inputData = ProgramIndexSaveSettingUseCase.InputData(
+                        programIndex = programIndex
+                    )
+                )
+            }
         }
     }
 
@@ -159,12 +197,24 @@ class ProgramStateModel(
             crudProgramDataProvider: CRUDProgramDataProvider,
             findProgramDataProvider: FindProgramDataProvider,
             findProblemDataProvider: FindProblemDataProvider,
+            rwSettingDataProvider: RWSettingDataProvider,
         ): ProgramStateModel = ProgramStateModel(
             deleteProgramUseCase = DeleteProgramInteractor(provider = crudProgramDataProvider),
             getDetailsProgramUseCase = GetDetailsProgramInteractor(provider = crudProgramDataProvider),
             getListProgramUseCase = GetListProgramInteractor(provider = findProgramDataProvider),
             saveProgramUseCase = SaveProgramInteractor(provider = crudProgramDataProvider),
             getListProblemUseCase = GetListProblemInteractor(provider = findProblemDataProvider),
+            programIndexLoadSettingUseCase = ProgramIndexLoadSettingInteractor(
+                useCase = LoadSettingInteractor(
+                    provider = rwSettingDataProvider
+                )
+            ),
+            programIndexSaveSettingUseCase = ProgramIndexSaveSettingInteractor(
+                useCase = SaveSettingInteractor(
+                    provider = rwSettingDataProvider
+                )
+            ),
         )
+
     }
 }

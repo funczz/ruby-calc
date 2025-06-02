@@ -2,8 +2,10 @@ package util
 
 import com.github.funczz.ruby_calc.data.db.RubyCalcDBResources
 import com.github.funczz.ruby_calc.data.db.entity.ElementEntity
+import com.github.funczz.ruby_calc.data.db.entity.SettingEntity
 import com.github.funczz.ruby_calc.data.db.entity.element
 import com.github.funczz.ruby_calc.data.db.entity.problem
+import com.github.funczz.ruby_calc.data.db.entity.setting
 import com.github.funczz.ruby_calc.data.db.table.AnswerTable
 import com.github.funczz.ruby_calc.data.db.table.ProblemTable
 import com.github.funczz.ruby_calc.data.db.table.ProgramTable
@@ -113,6 +115,18 @@ open class DBTestUtil {
                     set(it.problemId, problemId)
                     set(it.value, value)
                 } as Long
+            }
+        }
+
+        fun Database.insertSetting(name: String, index: Int, value: String) {
+            this.useTransaction {
+                this.setting.add(
+                    entity = SettingEntity {
+                        this.settingName = name
+                        this.settingIndex = index
+                        this.settingValue = value
+                    }
+                )
             }
         }
     }

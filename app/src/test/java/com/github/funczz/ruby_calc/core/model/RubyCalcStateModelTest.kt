@@ -22,6 +22,8 @@ import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetListProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.SaveProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.ruby.ExecuteRubyUseCase
+import com.github.funczz.ruby_calc.core.vo.Column
+import com.github.funczz.ruby_calc.core.vo.OrderBy
 import com.github.funczz.ruby_calc.data.db.entity.answer
 import com.github.funczz.ruby_calc.data.db.entity.element
 import com.github.funczz.ruby_calc.data.db.entity.problem
@@ -327,6 +329,80 @@ class RubyCalcStateModelTest {
             RubyService.EvalException::class,
             stateModel.rubyStateModel.rubyResult.failure.get()::class
         )
+    }
+
+    /**
+     * Setting
+     */
+
+    @Test
+    fun problemIndexSetting() {
+        val value = "hello world."
+        val column = Column.CREATED_AT
+        val orderBy = OrderBy.DESC
+        val limit = 50
+        stateModel.present(
+            data = ProblemStateData.InputData(
+                value = GetListProblemUseCase.InputData(
+                    value = value,
+                    orderColumn = column,
+                    orderBy = orderBy,
+                    limit = limit
+                )
+            )
+        )
+        stateModel.present(data = RubyCalcStateData.OnSave)
+        stateModel.present(data = RubyCalcStateData.OnClose)
+        stateModel.present(
+            data = ProblemStateData.InputData(
+                value = GetListProblemUseCase.InputData(
+                    value = "HELLO WORLD!",
+                    orderColumn = Column.UPDATED_AT,
+                    orderBy = OrderBy.ASC,
+                    limit = 100
+                )
+            )
+        )
+        stateModel.present(data = RubyCalcStateData.OnLoad)
+        assertEquals(value, stateModel.problemStateModel.problemIndex.value)
+        assertEquals(column, stateModel.problemStateModel.problemIndex.orderColumn)
+        assertEquals(orderBy, stateModel.problemStateModel.problemIndex.orderBy)
+        assertEquals(limit, stateModel.problemStateModel.problemIndex.limit)
+    }
+
+    @Test
+    fun programIndexSetting() {
+        val value = "hello world."
+        val column = Column.CREATED_AT
+        val orderBy = OrderBy.DESC
+        val limit = 50
+        stateModel.present(
+            data = ProgramStateData.InputData(
+                value = GetListProgramUseCase.InputData(
+                    value = value,
+                    orderColumn = column,
+                    orderBy = orderBy,
+                    limit = limit
+                )
+            )
+        )
+        stateModel.present(data = RubyCalcStateData.OnSave)
+        stateModel.present(data = RubyCalcStateData.OnClose)
+        stateModel.present(
+            data = ProgramStateData.InputData(
+                value = GetListProgramUseCase.InputData(
+                    value = "HELLO WORLD!",
+                    orderColumn = Column.UPDATED_AT,
+                    orderBy = OrderBy.ASC,
+                    limit = 100
+                )
+            )
+        )
+        stateModel.present(data = RubyCalcStateData.OnLoad)
+        assertEquals(value, stateModel.programStateModel.programIndex.value)
+        assertEquals(column, stateModel.programStateModel.programIndex.orderColumn)
+        assertEquals(orderBy, stateModel.programStateModel.programIndex.orderBy)
+        assertEquals(limit, stateModel.programStateModel.programIndex.limit)
     }
 
     /**

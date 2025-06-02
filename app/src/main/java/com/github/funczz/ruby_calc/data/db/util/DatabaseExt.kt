@@ -94,6 +94,20 @@ interface DatabaseExt {
                 }
                 it.commit()
             }
+
+            //SettingTable
+            //for (row in this
+            //    .from(SettingTable)
+            //    .select()
+            //    .where { SettingTable.settingValue like "%" }
+            //    .orderBy(SettingTable.settingName.asc(), SettingTable.settingIndex.asc())) {
+            //    cloneDatabase.insert(SettingTable) { tbl ->
+            //        set(tbl.settingName, row[tbl.settingName])
+            //        set(tbl.settingIndex, row[tbl.settingIndex])
+            //        set(tbl.settingValue, row[tbl.settingValue])
+            //    }
+            //    it.commit()
+            //}
         }
     }
 

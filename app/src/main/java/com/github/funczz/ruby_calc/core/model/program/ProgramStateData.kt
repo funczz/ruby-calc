@@ -47,4 +47,8 @@ sealed interface ProgramStateData : RubyCalcStateData {
         val value: ProgramUseCase.InputData
     ) : ProgramStateData
 
+    data object LoadData : ProgramStateData
+
+    data object SaveData : ProgramStateData
+
 }

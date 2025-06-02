@@ -16,6 +16,7 @@ import com.github.funczz.ruby_calc.data.provider.problem.DBCRUDProblemDataProvid
 import com.github.funczz.ruby_calc.data.provider.problem.DBFindProblemDataProvider
 import com.github.funczz.ruby_calc.data.provider.program.DBCRUDProgramDataProvider
 import com.github.funczz.ruby_calc.data.provider.program.DBFindProgramDataProvider
+import com.github.funczz.ruby_calc.data.provider.setting.DBRWSettingDataProvider
 
 object RubyCalStateModelFactory {
 
@@ -28,16 +29,19 @@ object RubyCalStateModelFactory {
         val rwElementDataProvider = DBRWElementDataProvider(database = database)
         val crudAnswerDataProvider = DBCRUDAnswerDataProvider(database = database)
         val findAnswerDataProvider = DBFindAnswerDataProvider(database = database)
+        val rwSettingDataProvider = DBRWSettingDataProvider(database = database)
         return RubyCalcStateModel(
             programStateModel = ProgramStateModel.new(
                 crudProgramDataProvider = crudProgramDataProvider,
                 findProgramDataProvider = findProgramDataProvider,
                 findProblemDataProvider = findProblemDataProvider,
+                rwSettingDataProvider = rwSettingDataProvider,
             ),
             problemStateModel = ProblemStateModel.new(
                 crudProblemDataProvider = crudProblemDataProvider,
                 crudProgramDataProvider = crudProgramDataProvider,
                 findProblemDataProvider = findProblemDataProvider,
+                rwSettingDataProvider = rwSettingDataProvider,
                 rwElementDataProvider = rwElementDataProvider,
                 findAnswerDataProvider = findAnswerDataProvider,
             ),
