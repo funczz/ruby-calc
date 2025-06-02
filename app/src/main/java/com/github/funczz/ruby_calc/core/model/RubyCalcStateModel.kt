@@ -82,6 +82,11 @@ class RubyCalcStateModel(
                 is AnswerStateData -> answerStateModel.present(data = data)
                 is RubyStateData -> rubyStateModel.present(data = data)
                 is ErrorStateData -> errorStateModel.present(data = data)
+                is RubyCalcStateData.InitializeData -> {
+                    data.programInitializeData?.let {
+                        programStateModel.present(data = it)
+                    }
+                }
             }
         } catch (th: Throwable) {
             errorPerformed(th)

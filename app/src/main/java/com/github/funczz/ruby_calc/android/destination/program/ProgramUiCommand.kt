@@ -74,6 +74,23 @@ object ProgramUiCommand : UiCommand {
         notifier.accept(input = inputData)
     }
 
+    fun loadEditUiState(presenter: Presenter<UiState>) {
+        val uiState = { presenter.getStateFlow().value }
+        if (uiState().programEditUiState.isInitialized) return
+        val programEdit = uiState().programEdit
+        val newProgramEditUiState = ProgramEditUiState(
+            id = programEdit.id,
+            name = TextFieldState(text = programEdit.name),
+            description = TextFieldState(text = programEdit.description),
+            hint = TextFieldState(text = programEdit.hint),
+            code = TextFieldState(text = programEdit.code),
+            isInitialized = true,
+        )
+        val newUiState = uiState().copy(programEditUiState = newProgramEditUiState)
+        logger.info { "call `presenter.render`. UiState=%s".format(newUiState.toString()) }
+        presenter.render(output = newUiState)
+    }
+
     fun close(notifier: Notifier, navHostController: NavHostController) {
         val inputData = ProgramStateData.InitializeData(
             programSaveResult = ProgramSaveResult(),
@@ -131,7 +148,8 @@ object ProgramUiCommand : UiCommand {
         notifier.accept(input = bulk)
         val newUiState = uiState.copy(
             programEditUiState = ProgramEditUiState(
-                code = TextFieldState(text = RubyService.REQUIRED_BIGDECIMAL_MATH_JRUBY_SCRIPT_HEADER)
+                code = TextFieldState(text = RubyService.REQUIRED_BIGDECIMAL_MATH_JRUBY_SCRIPT_HEADER),
+                isInitialized = true,
             ),
             argvUiState = ArgvUiState(),
         )
@@ -176,10 +194,12 @@ object ProgramUiCommand : UiCommand {
                     hint = TextFieldState(text = programModel.hint),
                     code = TextFieldState(text = programModel.code),
                     createAt = programModel.createdAt,
-                    updatedAt = programModel.updatedAt
+                    updatedAt = programModel.updatedAt,
+                    isInitialized = true,
                 )
             } ?: ProgramEditUiState(
-            code = TextFieldState(text = RubyService.REQUIRED_BIGDECIMAL_MATH_JRUBY_SCRIPT_HEADER)
+            code = TextFieldState(text = RubyService.REQUIRED_BIGDECIMAL_MATH_JRUBY_SCRIPT_HEADER),
+            isInitialized = true,
         )
         val newUiState = uiState().copy(
             programEditUiState = programEditUiState,

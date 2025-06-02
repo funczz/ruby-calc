@@ -56,6 +56,7 @@ object UiRepresentation : SamStateRepresentation<Pair<RubyCalcStateModel, UiStat
             programIndex = stateModel.programStateModel.programIndex,
             programSaveResult = stateModel.programStateModel.programSaveResult,
             programSelection = stateModel.programStateModel.programSelection,
+            programEdit = stateModel.programStateModel.programEdit,
             rubyResult = stateModel.rubyStateModel.rubyResult,
             throwableList = stateModel.errorStateModel.throwableList.reversed(),
             problemEditUiState = newProblemEditUiState,

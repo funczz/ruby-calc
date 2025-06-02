@@ -18,6 +18,8 @@ sealed interface ProgramStateData : RubyCalcStateData {
 
         val programSelection: ProgramIndex? = null,
 
+        val programEdit: ProgramEdit? = null,
+
         ) : ProgramStateData
 
     data class SelectionData(

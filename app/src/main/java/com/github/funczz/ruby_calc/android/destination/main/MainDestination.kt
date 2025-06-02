@@ -27,6 +27,8 @@ import com.github.funczz.ruby_calc.android.destination.program.ProgramUiCommand
 import com.github.funczz.ruby_calc.android.destination.system.SystemDestination
 import com.github.funczz.ruby_calc.core.action.accept
 import com.github.funczz.ruby_calc.core.model.RubyCalcStateData
+import com.github.funczz.ruby_calc.core.model.program.ProgramEdit
+import com.github.funczz.ruby_calc.core.model.program.ProgramStateData
 import com.github.funczz.ruby_calc.core.service.BackupService
 import java.util.concurrent.Executor
 
@@ -44,10 +46,25 @@ fun MainDestination(
                 notifier.accept(input = RubyCalcStateData.OnLoad)
                 ProblemUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
                 ProgramUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
+                ProgramUiCommand.loadEditUiState(presenter = presenter)
             }
 
             Lifecycle.Event.ON_STOP -> {
                 Log.d("LifecycleEvent", "ON_STOP")
+                val programEditUiState = presenter.getStateFlow().value.programEditUiState
+                notifier.accept(
+                    input = RubyCalcStateData.InitializeData(
+                        programInitializeData = ProgramStateData.InitializeData(
+                            programEdit = ProgramEdit(
+                                id = programEditUiState.id,
+                                name = programEditUiState.name.value.text,
+                                description = programEditUiState.description.value.text,
+                                hint = programEditUiState.hint.value.text,
+                                code = programEditUiState.code.value.text,
+                            )
+                        )
+                    )
+                )
                 notifier.accept(input = RubyCalcStateData.OnSave)
             }
 

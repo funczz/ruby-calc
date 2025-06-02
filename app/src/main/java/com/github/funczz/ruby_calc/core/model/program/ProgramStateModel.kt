@@ -14,6 +14,8 @@ import com.github.funczz.ruby_calc.core.interactor.program.SaveProgramInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramDetailsLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramDetailsSaveSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramEditLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProgramEditSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProgramIndexSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
@@ -24,6 +26,8 @@ import com.github.funczz.ruby_calc.core.usecase.program.GetListProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.SaveProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramDetailsLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramDetailsSaveSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramEditLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProgramEditSaveSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProgramIndexSaveSettingUseCase
 import java.util.Optional
@@ -50,6 +54,10 @@ class ProgramStateModel(
 
     private val programDetailsSaveSettingUseCase: ProgramDetailsSaveSettingUseCase,
 
+    private val programEditLoadSettingUseCase: ProgramEditLoadSettingUseCase,
+
+    private val programEditSaveSettingUseCase: ProgramEditSaveSettingUseCase,
+
     programDetails: ProgramDetails = ProgramDetails(),
 
     programIndex: ProgramIndex = ProgramIndex(),
@@ -57,6 +65,8 @@ class ProgramStateModel(
     programSaveResult: ProgramSaveResult = ProgramSaveResult(),
 
     programSelection: ProgramIndex = ProgramIndex(),
+
+    programEdit: ProgramEdit = ProgramEdit(),
 
     ) : SamModel<ProgramStateData> {
 
@@ -72,6 +82,9 @@ class ProgramStateModel(
     var programSelection: ProgramIndex = programSelection
         private set
 
+    var programEdit: ProgramEdit = programEdit
+        private set
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun present(data: ProgramStateData) {
@@ -82,6 +95,7 @@ class ProgramStateModel(
                 data.programIndex?.let { programIndex = it }
                 data.programSaveResult?.let { programSaveResult = it }
                 data.programSelection?.let { programSelection = it }
+                data.programEdit?.let { programEdit = it }
             }
 
             is ProgramStateData.SelectionData -> {
@@ -191,6 +205,31 @@ class ProgramStateModel(
                     )
                     present(data = programDetailsIndexData)
                 }
+
+                //Load ProgramEdit
+                val defaultProgramEdit = when (programDetails.programModel.isPresent) {
+                    true -> {
+                        val model = programDetails.programModel.get()
+                        ProgramEdit(
+                            id = model.id,
+                            name = model.name,
+                            description = model.description,
+                            hint = model.hint,
+                            code = model.code,
+                        )
+                    }
+
+                    else -> ProgramEdit()
+                }
+                val programEditData = programEditLoadSettingUseCase(
+                    inputData = ProgramEditLoadSettingUseCase.InputData(
+                        programEdit = defaultProgramEdit
+                    )
+                )
+                val programInitializeData = ProgramStateData.InitializeData(
+                    programEdit = programEditData
+                )
+                present(data = programInitializeData)
             }
 
             is ProgramStateData.SaveData -> {
@@ -205,6 +244,13 @@ class ProgramStateModel(
                 programDetailsSaveSettingUseCase(
                     inputData = ProgramDetailsSaveSettingUseCase.InputData(
                         programId = Optional.ofNullable(programDetails.programModel.getOrNull()?.id)
+                    )
+                )
+
+                //Save ProgramEdit
+                programEditSaveSettingUseCase(
+                    inputData = ProgramEditSaveSettingUseCase.InputData(
+                        programEdit = programEdit
                     )
                 )
             }
@@ -248,6 +294,12 @@ class ProgramStateModel(
             programDetailsSaveSettingUseCase = ProgramDetailsSaveSettingInteractor(
                 useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
             ),
+            programEditLoadSettingUseCase = ProgramEditLoadSettingInteractor(
+                useCase = LoadSettingInteractor(provider = rwSettingDataProvider)
+            ),
+            programEditSaveSettingUseCase = ProgramEditSaveSettingInteractor(
+                useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
+            )
         )
 
     }

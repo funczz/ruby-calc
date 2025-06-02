@@ -10,6 +10,7 @@ import com.github.funczz.ruby_calc.core.model.problem.ProblemDetails
 import com.github.funczz.ruby_calc.core.model.problem.ProblemIndex
 import com.github.funczz.ruby_calc.core.model.problem.ProblemSaveResult
 import com.github.funczz.ruby_calc.core.model.program.ProgramDetails
+import com.github.funczz.ruby_calc.core.model.program.ProgramEdit
 import com.github.funczz.ruby_calc.core.model.program.ProgramIndex
 import com.github.funczz.ruby_calc.core.model.program.ProgramSaveResult
 import com.github.funczz.ruby_calc.core.model.ruby.RubyResult
@@ -33,6 +34,10 @@ data class UiState(
     val programIndex: ProgramIndex = ProgramIndex(),
     val programSaveResult: ProgramSaveResult = ProgramSaveResult(),
     val programSelection: ProgramIndex = ProgramIndex(),
+
+    //programEdit (RubyCalcStateModel)
+    val programEdit: ProgramEdit = ProgramEdit(),
+
     val programSelectionSearchBoxUiState: SearchBoxUiState = SearchBoxUiState(),
 
     //rubyStateModel (RubyCalcStateModel)

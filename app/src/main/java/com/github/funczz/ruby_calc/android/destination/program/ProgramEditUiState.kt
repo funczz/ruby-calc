@@ -11,4 +11,5 @@ data class ProgramEditUiState(
     val code: TextFieldState = TextFieldState(text = ""),
     val createAt: Instant? = null,
     val updatedAt: Instant? = null,
+    val isInitialized: Boolean = false,
 )
