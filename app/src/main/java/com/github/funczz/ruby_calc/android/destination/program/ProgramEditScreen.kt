@@ -77,7 +77,7 @@ fun ProgramEditScreen(
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
+        skipPartiallyExpanded = true,
     )
 
     val onShow: () -> Unit = { showBottomSheet = true }
