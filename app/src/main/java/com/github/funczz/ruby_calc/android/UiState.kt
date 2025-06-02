@@ -7,6 +7,7 @@ import com.github.funczz.ruby_calc.core.model.answer.AnswerDetails
 import com.github.funczz.ruby_calc.core.model.answer.AnswerIndex
 import com.github.funczz.ruby_calc.core.model.element.ElementDetails
 import com.github.funczz.ruby_calc.core.model.problem.ProblemDetails
+import com.github.funczz.ruby_calc.core.model.problem.ProblemEdit
 import com.github.funczz.ruby_calc.core.model.problem.ProblemIndex
 import com.github.funczz.ruby_calc.core.model.problem.ProblemSaveResult
 import com.github.funczz.ruby_calc.core.model.program.ProgramDetails
@@ -28,6 +29,9 @@ data class UiState(
     val problemDetails: ProblemDetails = ProblemDetails(),
     val problemIndex: ProblemIndex = ProblemIndex(),
     val problemSaveResult: ProblemSaveResult = ProblemSaveResult(),
+
+    //problemEdit (RubyCalcStateModel)
+    val problemEdit: ProblemEdit = ProblemEdit(),
 
     //programStateModel (RubyCalcStateModel)
     val programDetails: ProgramDetails = ProgramDetails(),

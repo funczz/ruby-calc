@@ -27,9 +27,12 @@ import com.github.funczz.ruby_calc.android.destination.program.ProgramUiCommand
 import com.github.funczz.ruby_calc.android.destination.system.SystemDestination
 import com.github.funczz.ruby_calc.core.action.accept
 import com.github.funczz.ruby_calc.core.model.RubyCalcStateData
+import com.github.funczz.ruby_calc.core.model.problem.ProblemEdit
+import com.github.funczz.ruby_calc.core.model.problem.ProblemStateData
 import com.github.funczz.ruby_calc.core.model.program.ProgramEdit
 import com.github.funczz.ruby_calc.core.model.program.ProgramStateData
 import com.github.funczz.ruby_calc.core.service.BackupService
+import java.time.Instant
 import java.util.concurrent.Executor
 
 @Composable
@@ -46,14 +49,34 @@ fun MainDestination(
                 notifier.accept(input = RubyCalcStateData.OnLoad)
                 ProblemUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
                 ProgramUiCommand.loadIndexSearchBoxUiState(presenter = presenter)
+                ProblemUiCommand.loadEditUiState(presenter = presenter)
                 ProgramUiCommand.loadEditUiState(presenter = presenter)
             }
 
             Lifecycle.Event.ON_STOP -> {
                 Log.d("LifecycleEvent", "ON_STOP")
+                val problemEditUiState = presenter.getStateFlow().value.problemEditUiState
                 val programEditUiState = presenter.getStateFlow().value.programEditUiState
+                val now = Instant.now()
                 notifier.accept(
                     input = RubyCalcStateData.InitializeData(
+                        problemInitializeData = ProblemStateData.InitializeData(
+                            problemEdit = ProblemEdit(
+                                id = problemEditUiState.id,
+                                name = problemEditUiState.name.value.text,
+                                programId = problemEditUiState.programModel?.id,
+                                programName = problemEditUiState.programModel?.name ?: "",
+                                programDescription = problemEditUiState.programModel?.description
+                                    ?: "",
+                                programHint = problemEditUiState.programModel?.hint ?: "",
+                                programCode = problemEditUiState.programModel?.code ?: "",
+                                programCreatedAt = problemEditUiState.programModel?.createdAt
+                                    ?: now,
+                                programUpdatedAt = problemEditUiState.programModel?.updatedAt
+                                    ?: now,
+                                comment = problemEditUiState.comment.value.text,
+                            )
+                        ),
                         programInitializeData = ProgramStateData.InitializeData(
                             programEdit = ProgramEdit(
                                 id = programEditUiState.id,

@@ -18,6 +18,8 @@ import com.github.funczz.ruby_calc.core.interactor.program.GetDetailsProgramInte
 import com.github.funczz.ruby_calc.core.interactor.setting.LoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemDetailsLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemDetailsSaveSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemEditLoadSettingInteractor
+import com.github.funczz.ruby_calc.core.interactor.setting.ProblemEditSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexLoadSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.ProblemIndexSaveSettingInteractor
 import com.github.funczz.ruby_calc.core.interactor.setting.SaveSettingInteractor
@@ -30,6 +32,8 @@ import com.github.funczz.ruby_calc.core.usecase.problem.SaveProblemUseCase
 import com.github.funczz.ruby_calc.core.usecase.program.GetDetailsProgramUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemDetailsLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemDetailsSaveSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemEditLoadSettingUseCase
+import com.github.funczz.ruby_calc.core.usecase.setting.ProblemEditSaveSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexLoadSettingUseCase
 import com.github.funczz.ruby_calc.core.usecase.setting.ProblemIndexSaveSettingUseCase
 import java.util.Optional
@@ -60,11 +64,17 @@ class ProblemStateModel(
 
     private val problemDetailsSaveSettingUseCase: ProblemDetailsSaveSettingUseCase,
 
+    private val problemEditLoadSettingUseCase: ProblemEditLoadSettingUseCase,
+
+    private val problemEditSaveSettingUseCase: ProblemEditSaveSettingUseCase,
+
     problemDetails: ProblemDetails = ProblemDetails(),
 
     problemIndex: ProblemIndex = ProblemIndex(),
 
     problemSaveResult: ProblemSaveResult = ProblemSaveResult(),
+
+    problemEdit: ProblemEdit = ProblemEdit(),
 
     ) : SamModel<ProblemStateData> {
 
@@ -77,6 +87,9 @@ class ProblemStateModel(
     var problemSaveResult: ProblemSaveResult = problemSaveResult
         private set
 
+    var problemEdit: ProblemEdit = problemEdit
+        private set
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     override fun present(data: ProblemStateData) {
@@ -86,6 +99,7 @@ class ProblemStateModel(
                 data.problemDetails?.let { problemDetails = it }
                 data.problemIndex?.let { problemIndex = it }
                 data.problemSaveResult?.let { problemSaveResult = it }
+                data.problemEdit?.let { problemEdit = it }
             }
 
             is ProblemStateData.InputData -> {
@@ -193,6 +207,45 @@ class ProblemStateModel(
                     )
                     present(data = problemDetailsIndexData)
                 }
+
+                //Load ProblemEdit
+                var defaultProblemEdit = when (problemDetails.problemModel.isPresent) {
+                    true -> {
+                        val model = problemDetails.problemModel.get()
+                        ProblemEdit(
+                            id = model.id,
+                            name = model.name,
+                            comment = model.comment,
+                        )
+                    }
+
+                    else -> ProblemEdit()
+                }
+                defaultProblemEdit = when (problemDetails.programModel.isPresent) {
+                    true -> {
+                        val model = problemDetails.programModel.get()
+                        defaultProblemEdit.copy(
+                            programId = model.id,
+                            programName = model.name,
+                            programDescription = model.description,
+                            programHint = model.hint,
+                            programCode = model.code,
+                            programCreatedAt = model.createdAt,
+                            programUpdatedAt = model.updatedAt,
+                        )
+                    }
+
+                    else -> defaultProblemEdit
+                }
+                val problemEditData = problemEditLoadSettingUseCase(
+                    inputData = ProblemEditLoadSettingUseCase.InputData(
+                        problemEdit = defaultProblemEdit
+                    )
+                )
+                val problemInitializeData = ProblemStateData.InitializeData(
+                    problemEdit = problemEditData
+                )
+                present(data = problemInitializeData)
             }
 
             is ProblemStateData.SaveData -> {
@@ -207,6 +260,13 @@ class ProblemStateModel(
                 problemDetailsSaveSettingUseCase(
                     inputData = ProblemDetailsSaveSettingUseCase.InputData(
                         problemId = Optional.ofNullable(problemDetails.problemModel.getOrNull()?.id)
+                    )
+                )
+
+                //Save ProblemEdit
+                problemEditSaveSettingUseCase(
+                    inputData = ProblemEditSaveSettingUseCase.InputData(
+                        problemEdit = problemEdit
                     )
                 )
             }
@@ -250,6 +310,12 @@ class ProblemStateModel(
             problemDetailsSaveSettingUseCase = ProblemDetailsSaveSettingInteractor(
                 useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
             ),
+            problemEditLoadSettingUseCase = ProblemEditLoadSettingInteractor(
+                useCase = LoadSettingInteractor(provider = rwSettingDataProvider)
+            ),
+            problemEditSaveSettingUseCase = ProblemEditSaveSettingInteractor(
+                useCase = SaveSettingInteractor(provider = rwSettingDataProvider)
+            )
         )
     }
 }

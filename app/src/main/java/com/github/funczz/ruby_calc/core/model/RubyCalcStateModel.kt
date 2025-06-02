@@ -83,6 +83,9 @@ class RubyCalcStateModel(
                 is RubyStateData -> rubyStateModel.present(data = data)
                 is ErrorStateData -> errorStateModel.present(data = data)
                 is RubyCalcStateData.InitializeData -> {
+                    data.problemInitializeData?.let {
+                        problemStateModel.present(data = it)
+                    }
                     data.programInitializeData?.let {
                         programStateModel.present(data = it)
                     }

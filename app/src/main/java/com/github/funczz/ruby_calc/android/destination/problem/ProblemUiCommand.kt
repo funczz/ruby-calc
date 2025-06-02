@@ -14,6 +14,7 @@ import com.github.funczz.ruby_calc.core.model.RubyCalcStateData
 import com.github.funczz.ruby_calc.core.model.problem.ProblemDetails
 import com.github.funczz.ruby_calc.core.model.problem.ProblemSaveResult
 import com.github.funczz.ruby_calc.core.model.problem.ProblemStateData
+import com.github.funczz.ruby_calc.core.model.program.ProgramModel
 import com.github.funczz.ruby_calc.core.model.ruby.RubyResult
 import com.github.funczz.ruby_calc.core.model.ruby.RubyStateData
 import com.github.funczz.ruby_calc.core.usecase.problem.DeleteProblemUseCase
@@ -71,6 +72,39 @@ object ProblemUiCommand : UiCommand {
         )
         logger.info { "call `notifier.accept`. ProblemStateData.InitializeData=%s".format(inputData.toString()) }
         notifier.accept(input = inputData)
+    }
+
+    fun loadEditUiState(presenter: Presenter<UiState>) {
+        val uiState = { presenter.getStateFlow().value }
+        if (uiState().problemEditUiState.isInitialized) return
+        val problemEdit = uiState().problemEdit
+        var newProblemEditUiState = ProblemEditUiState(
+            id = problemEdit.id,
+            name = TextFieldState(text = problemEdit.name),
+            comment = TextFieldState(text = problemEdit.comment),
+            isInitialized = true,
+        )
+        newProblemEditUiState = when (uiState().problemEdit.programId is Long) {
+            true -> {
+                val edit = uiState().problemEdit
+                newProblemEditUiState.copy(
+                    programModel = ProgramModel(
+                        id = edit.programId!!,
+                        name = edit.programName,
+                        description = edit.programDescription,
+                        hint = edit.programHint,
+                        code = edit.programCode,
+                        createdAt = edit.programCreatedAt,
+                        updatedAt = edit.programUpdatedAt,
+                    )
+                )
+            }
+
+            else -> newProblemEditUiState
+        }
+        val newUiState = uiState().copy(problemEditUiState = newProblemEditUiState)
+        logger.info { "call `presenter.render`. UiState=%s".format(newUiState.toString()) }
+        presenter.render(output = newUiState)
     }
 
     fun close(notifier: Notifier, navHostController: NavHostController) {
@@ -135,7 +169,9 @@ object ProblemUiCommand : UiCommand {
         }
         notifier.accept(input = bulk)
         val newUiState = uiState.copy(
-            problemEditUiState = ProblemEditUiState(),
+            problemEditUiState = ProblemEditUiState(
+                isInitialized = true,
+            ),
             argvUiState = ArgvUiState(),
         )
         logger.info { "call `presenter.render`. UiState=%s".format(newUiState.toString()) }
@@ -178,9 +214,12 @@ object ProblemUiCommand : UiCommand {
                     programModel = uiState().problemDetails.programModel.getOrNull(),
                     comment = TextFieldState(text = problemModel.comment),
                     createAt = problemModel.createdAt,
-                    updatedAt = problemModel.updatedAt
+                    updatedAt = problemModel.updatedAt,
+                    isInitialized = true,
                 )
-            } ?: ProblemEditUiState()
+            } ?: ProblemEditUiState(
+            isInitialized = true,
+        )
 
         val newArgvUiState = ArgvUiState()
         uiState().elementDetails.elementList.forEach {

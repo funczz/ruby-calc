@@ -52,6 +52,7 @@ object UiRepresentation : SamStateRepresentation<Pair<RubyCalcStateModel, UiStat
             problemDetails = stateModel.problemStateModel.problemDetails,
             problemIndex = stateModel.problemStateModel.problemIndex,
             problemSaveResult = stateModel.problemStateModel.problemSaveResult,
+            problemEdit = stateModel.problemStateModel.problemEdit,
             programDetails = stateModel.programStateModel.programDetails,
             programIndex = stateModel.programStateModel.programIndex,
             programSaveResult = stateModel.programStateModel.programSaveResult,

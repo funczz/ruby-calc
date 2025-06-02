@@ -13,6 +13,8 @@ sealed interface ProblemStateData : RubyCalcStateData {
 
         val problemSaveResult: ProblemSaveResult? = null,
 
+        val problemEdit: ProblemEdit? = null,
+
         ) : ProblemStateData
 
     data class InputData(

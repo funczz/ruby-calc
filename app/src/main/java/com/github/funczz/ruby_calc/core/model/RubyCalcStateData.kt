@@ -1,5 +1,6 @@
 package com.github.funczz.ruby_calc.core.model
 
+import com.github.funczz.ruby_calc.core.model.problem.ProblemStateData
 import com.github.funczz.ruby_calc.core.model.program.ProgramStateData
 
 interface RubyCalcStateData {
@@ -20,6 +21,7 @@ interface RubyCalcStateData {
     object OnSave : RubyCalcStateData
 
     data class InitializeData(
+        val problemInitializeData: ProblemStateData.InitializeData? = null,
         val programInitializeData: ProgramStateData.InitializeData? = null,
     ) : RubyCalcStateData
 

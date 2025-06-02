@@ -11,4 +11,5 @@ data class ProblemEditUiState(
     val comment: TextFieldState = TextFieldState(text = ""),
     val createAt: Instant? = null,
     val updatedAt: Instant? = null,
+    val isInitialized: Boolean = false,
 )
