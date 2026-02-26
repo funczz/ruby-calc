@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.github.funczz.kotlin.notifier.Notifier
+import com.github.funczz.ruby_calc.android.MainApplication
 import com.github.funczz.ruby_calc.android.Presenter
 import com.github.funczz.ruby_calc.android.R
 import com.github.funczz.ruby_calc.android.UiState
@@ -71,6 +72,10 @@ fun ProgramEditScreen(
     navHostController: NavHostController,
     modifier: Modifier,
 ) {
+    val title = MainApplication.SCRIPT_PATH
+
+    val body = MainApplication.scriptText
+
     val uiState by presenter.getState()
 
     ProgramUiCommand.clearSaveResult(presenter = presenter, notifier = notifier)
@@ -156,6 +161,8 @@ fun ProgramEditScreen(
                         TopAppBar(
                             title = {
                                 ProgramEditDropdownMenuBox(
+                                    title = title,
+                                    body = body,
                                     presenter = presenter,
                                     modifier = modifier,
                                 )
@@ -297,6 +304,8 @@ fun ProgramEditScreen(
 
 @Composable
 fun ProgramEditDropdownMenuBox(
+    title: String,
+    body: String,
     presenter: Presenter<UiState>,
     modifier: Modifier = Modifier,
 ) {
@@ -326,15 +335,11 @@ fun ProgramEditDropdownMenuBox(
                 text = { Text(text = stringResource(id = R.string.program_menu_view_ruby_script_label)) },
                 onClick = {
                     onSelect {
-                        val path = "jruby/lib/bigdecimal_math.rb"
-                        val text = Thread.currentThread().contextClassLoader!!
-                            .getResourceAsStream(path)
-                            .reader(Charsets.UTF_8)
-                            .readText()
+
                         ProgramUiCommand.addUiEvent(
                             uiEvent = TextViewerDialogUiEvent(
-                                title = path,
-                                body = text,
+                                title = title,
+                                body = body,
                                 confirmAction = { ProgramUiCommand.delUiEvent(presenter = presenter) },
                                 modifier = modifier,
                             ),

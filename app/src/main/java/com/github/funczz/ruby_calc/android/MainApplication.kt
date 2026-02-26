@@ -77,6 +77,14 @@ class MainApplication : Application(), InstanceHolder {
 
     companion object {
 
+        const val SCRIPT_PATH = "jruby/lib/bigdecimal_math.rb"
+
+        val scriptText = Thread.currentThread().contextClassLoader!!
+            .getResourceAsStream(SCRIPT_PATH)
+            .reader(Charsets.UTF_8)
+            .readText()
+
+
         private val TAG = MainApplication::class.simpleName
 
         private lateinit var _instance: MainApplication
