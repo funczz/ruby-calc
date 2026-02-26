@@ -1,6 +1,7 @@
 package com.github.funczz.ruby_calc.android.parts
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.DeleteOutline
@@ -221,98 +223,99 @@ fun CalculatorBox(
                 )
             }
         ) {
-            Column(
+            LazyColumn(
                 modifier = modifier
                     .padding(it)
                     .fillMaxSize()
+                    .horizontalScroll(rememberScrollState()),
             ) {
-
-                if (hint.isNotBlank()) {
-                    OutlinedTextField(
-                        value = hint,
-                        onValueChange = {},
-                        modifier = modifier.fillMaxWidth(),
-                        readOnly = true,
-                        singleLine = false,
-                        label = { Text(text = stringResource(id = R.string.program_hint_label)) },
-                    )
-                    Spacer(modifier = modifier.height(4.dp))
-                }
-
-                LazyColumn(
-                    modifier = modifier.fillMaxWidth(),
-                ) {
-                    items(argv.size) { index ->
-                        val label = stringResource(
-                            id = R.string.calculator_argument_format,
-                            index
+                item {
+                    if (hint.isNotBlank()) {
+                        OutlinedTextField(
+                            value = hint,
+                            onValueChange = {},
+                            modifier = modifier.fillMaxWidth(),
+                            readOnly = true,
+                            singleLine = false,
+                            label = { Text(text = stringResource(id = R.string.program_hint_label)) },
                         )
-
-                        Row {
-                            IconButton(
-                                onClick = { onRemoveAtARGV(index) },
-                            ) {
-                                Icon(
-                                    Icons.Filled.DeleteOutline,
-                                    contentDescription = stringResource(id = R.string.delete_content_description)
-                                )
-                            }
-
-                            TextField(
-                                value = onValueARGV(index),
-                                onValueChange = { v ->
-                                    onValueChangeARGV(index, v)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                label = { Text(text = label) },
-                                singleLine = true,
-                            )
-                        }
+                        Spacer(modifier = modifier.height(4.dp))
                     }
                 }
 
-                Box(Modifier.padding(16.dp))
+                items(argv.size) { index ->
+                    val label = stringResource(
+                        id = R.string.calculator_argument_format,
+                        index
+                    )
 
-                Column(
-                    modifier = modifier
-                        .fillMaxWidth()
-                ) {
-                    if (problemId is Long && result.isNotBlank()) {
-                        Button(
-                            onClick = onSaveResult,
-                            modifier = Modifier.align(Alignment.End),
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = colorResource(id = R.color.bootstrap_light),
-                                containerColor = colorResource(id = R.color.bootstrap_success),
-                                disabledContentColor = colorResource(id = R.color.bootstrap_light),
-                                disabledContainerColor = colorResource(id = R.color.bootstrap_secondary),
-                            )
+                    Row {
+                        IconButton(
+                            onClick = { onRemoveAtARGV(index) },
                         ) {
                             Icon(
-                                Icons.Filled.Save,
-                                contentDescription = stringResource(id = R.string.save_content_description),
-                                modifier = Modifier.size(ButtonDefaults.IconSize)
+                                Icons.Filled.DeleteOutline,
+                                contentDescription = stringResource(id = R.string.delete_content_description)
                             )
-                            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                            Text(stringResource(id = R.string.save_content_description))
                         }
-                    }
 
-                    OutlinedTextField(
-                        value = rubyResultTextValue,
-                        onValueChange = {},
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .align(Alignment.Start),
-                        readOnly = true,
-                        label = { Text(text = rubyResultTextLabel) },
-                        visualTransformation = NewlineMarkersVisualTransformation(
-                            maker = newLineMakerString,
-                            spanStyle = newLineMakerSpanStyle,
-                        ),
-                        singleLine = false,
-                    )
+                        TextField(
+                            value = onValueARGV(index),
+                            onValueChange = { v ->
+                                onValueChangeARGV(index, v)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            label = { Text(text = label) },
+                            singleLine = true,
+                        )
+                    }
+                }
+
+                item {
+                    Box(Modifier.padding(16.dp))
+                }
+
+                item {
+                    Column(
+                        modifier = modifier
+                            .fillMaxWidth()
+                    ) {
+                        if (problemId is Long && result.isNotBlank()) {
+                            Button(
+                                onClick = onSaveResult,
+                                modifier = Modifier.align(Alignment.End),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = colorResource(id = R.color.bootstrap_light),
+                                    containerColor = colorResource(id = R.color.bootstrap_success),
+                                    disabledContentColor = colorResource(id = R.color.bootstrap_light),
+                                    disabledContainerColor = colorResource(id = R.color.bootstrap_secondary),
+                                )
+                            ) {
+                                Icon(
+                                    Icons.Filled.Save,
+                                    contentDescription = stringResource(id = R.string.save_content_description),
+                                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                                )
+                                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+                                Text(stringResource(id = R.string.save_content_description))
+                            }
+                        }
+
+                        OutlinedTextField(
+                            value = rubyResultTextValue,
+                            onValueChange = {},
+                            modifier = Modifier
+                                .align(Alignment.Start),
+                            readOnly = true,
+                            label = { Text(text = rubyResultTextLabel) },
+                            visualTransformation = NewlineMarkersVisualTransformation(
+                                maker = newLineMakerString,
+                                spanStyle = newLineMakerSpanStyle,
+                            ),
+                            singleLine = false,
+                        )
+                    }
                 }
             }
         }
