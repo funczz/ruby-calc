@@ -33,7 +33,11 @@ class ProblemEditLoadSettingInteractor(
         val programId = useCase(
             inputData = LoadSettingUseCase.InputData(settingName = SettingItems.PROBLEM_EDIT_PROGRAM_ID.name)
         ).let {
-            it.firstOrNull()?.settingValue?.toLong() ?: inputData.problemEdit.programId
+            try {
+                it.firstOrNull()?.settingValue?.toLong() ?: inputData.problemEdit.programId
+            } catch (th: NumberFormatException) {
+                inputData.problemEdit.programId
+            }
         }
         //programName
         val programName = useCase(
