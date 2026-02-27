@@ -56,6 +56,16 @@ android {
         }
     }
 
+    // ファイル名をカスタマイズする設定
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.all {
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val appName = "RubyCalc" // アプリケーション名
+            val versionName = variant.versionName
+            output.outputFileName = "${appName}-${versionName}-${variant.buildType.name}.apk"
+        }
+    }
 }
 
 dependencies {
